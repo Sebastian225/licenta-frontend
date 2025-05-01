@@ -1,0 +1,36 @@
+.wrapper {
+    margin: 16px;
+}
+
+.note-dropdown {
+    margin: 8px;
+}
+
+.add-note-btn {
+    font-size: 33px;
+    margin-left: 450px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+tr{ 
+    border: 1px solid #797979;
+    cursor: move;
+}
+
+td, th {
+    padding: 0px 8px;
+}
+
+th {
+    font-size: larger;
+}
+
+.placeholder {
+    border: dotted 3px #999;
+    min-height: 73px;
+    // min-width: 1000px;
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }

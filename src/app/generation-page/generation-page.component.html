@@ -1,0 +1,33 @@
+<div class="wrapper">
+    <div class="input-group">
+        <mat-form-field appearance="fill" [matTooltip]="'Choose a subject file'" (click)="browseSubject()">
+            <mat-label>Subject file</mat-label>
+            <input #subjectFileField type="text" matInput [(ngModel)]="subjectFile">
+        </mat-form-field>
+    </div>
+    <div class="input-group">
+        <mat-form-field appearance="fill" [matTooltip]="'Choose a structure file'" (click)="browseStructure()">
+            <mat-label>Structure file</mat-label>
+            <input #structureFileField type="text" matInput [(ngModel)]="structureFile">
+        </mat-form-field>
+    </div>
+    <div class="input-group">
+        <mat-form-field appearance="fill" [matTooltip]="'How many files should be generated, between 1 and 100'">
+            <mat-label>Bulk generation</mat-label>
+            <input matInput type="number" min="1" max="100" value="1" [(ngModel)]="howManyFiles">
+        </mat-form-field>
+    </div>
+    <div class="input-group">
+        <mat-form-field appearance="fill" [matTooltip]="'Choose an output folder'" (click)="browseOutputFolder()">
+            <mat-label>Output folder</mat-label>
+            <input #outputFolderField type="text" matInput [(ngModel)]="outputFolder">
+        </mat-form-field>
+    </div>
+    <div class="input-group">
+        <mat-form-field appearance="fill" [matTooltip]="'Provide a name for the output files. Numbers will be added to the name to index the files, if you generate more than one file'">
+            <mat-label>Output file name</mat-label>
+            <input type="text" matInput [(ngModel)]="outputName">
+        </mat-form-field>
+    </div>
+    <button mat-raised-button color="primary" (click)="generate()">Generate</button>
+</div>

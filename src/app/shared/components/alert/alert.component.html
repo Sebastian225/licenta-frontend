@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Counter subject index</h2>
+<mat-dialog-content class="mat-typography">
+  <mat-form-field>
+    <mat-label>Choose a number</mat-label>
+    <input type="number" matInput [(ngModel)]="csIndex">
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-button [mat-dialog-close]="csIndex" cdkFocusInitial>Enter</button>
+</mat-dialog-actions>

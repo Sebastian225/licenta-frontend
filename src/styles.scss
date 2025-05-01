@@ -1,1 +1,40 @@
-/* You can add global styles to this file, and also import other style files */
+@use "app/shared/styles/variables" as var;
+
+html, body { height: 100%; }
+
+body { 
+    margin: 0; 
+    font-family: Roboto, "Helvetica Neue", sans-serif; 
+    background-color: var.$background;
+    color: var.$text;
+}
+
+.page-wrapper {
+    margin-left: 65px !important;
+
+    &.menu-expanded {
+        margin-left: 225px !important;
+    }
+}
+
+.menu-wrapper {
+    z-index: 10;
+}
+
+.context-menu {
+    span {
+        font-size: 14px;
+    }
+}
+
+.mat-select-panel {
+    margin-top: 20px;
+}
+
+.mat-option.mat-selected:not(.mat-option-disabled) {
+
+    .mat-option-text{
+        color: #fff
+    }
+    
+}

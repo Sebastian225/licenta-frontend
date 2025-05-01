@@ -1,0 +1,52 @@
+<div class="wrapper">
+    <div class="structure-elements-wrapper">
+        <div class="row">
+            <div class="structure-element" [ngClass]="{'selected': key.selected}" 
+                *ngFor="let key of keys; let i = index" 
+                (click)="selectKey(i, $event)"
+                (contextmenu)="showKeysContextMenu(i, $event)">
+                {{ key.displayValue }}
+            </div>
+        </div>
+        <hr>
+        <div class="row" *ngFor="let voice of parts; let line = index">
+            <div class="structure-element" [ngClass]="{'selected': section.selected}" 
+                *ngFor="let section of voice; let i = index" 
+                (click)="selectPart(line, i, $event)"
+                (contextmenu)="showPartsContextMenu(line, i, $event)">
+                {{ section.displayValue }}
+            </div>
+        </div>
+    </div>
+
+    <button mat-mini-fab matTooltip="Add part" color="accent" aria-label="Add part" 
+        class="add-part-btn" 
+        (click)="addPart()" 
+        [disabled]="parts.length > 3"
+        [ngStyle]="{'top.px': partsButtonPosition.top, 'left.px': partsButtonPosition.left }">+</button>
+
+    <button mat-mini-fab matTooltip="Add section" color="accent" aria-label="Add section" 
+        class="add-section-btn" 
+        (click)="addSection()"
+        [ngStyle]="{'top.px': sectionsButtonPosition.top, 'left.px': sectionsButtonPosition.left}">+</button>
+
+    <div class="generate-panel">
+        <mat-form-field [matTooltip]="'Choose an output folder'" (click)="browseFolder()">
+            <mat-label>Output folder</mat-label>
+            <input #outputField type="text" matInput [(ngModel)]="outputFolder">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Output file name</mat-label>
+            <input type="text" matInput [(ngModel)]="outputName">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="createStructure()">Create structure</button>
+    </div>
+
+    <div *ngIf="isMenuVisible" class="context-menu"
+        [ngStyle]="{'top.px': contextMenuPosition.top, 'left.px': contextMenuPosition.left}">
+        <mat-action-list>
+            <button mat-list-item (click)="deleteRow()" [disabled]="isKeysContextMenu || parts.length < 4">Delete row</button>
+            <button mat-list-item (click)="deleteColumn()" [disabled]="isKeysContextMenu || keys.length < 2">Delete column</button>
+        </mat-action-list>
+    </div>
+</div>

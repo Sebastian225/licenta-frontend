@@ -1,0 +1,47 @@
+<div class="wrapper">
+    <table>
+        <thead>
+            <th>Note</th>
+            <th>Octave</th>
+            <th>Duration</th>
+        </thead>
+        <tbody cdkDropList (cdkDropListDropped)="drop($event)">
+            <tr *ngFor="let note of notes; let i = index" cdkDrag>
+                <!-- <div class="placeholder" *cdkDragPlaceholder></div> -->
+                <td>
+                    <mat-form-field class="note-dropdown">
+                        <mat-select [disableOptionCentering]="true" [(ngModel)]="note.pitch">
+                            <mat-option *ngFor="let pitch of notePitches" [value]="note.pitch">{{pitch}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="note-dropdown">
+                        <mat-select [disableOptionCentering]="true" [(ngModel)]="note.octave">
+                            <mat-option *ngFor="let octave of noteOctaves" [value]="note.octave">{{octave}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <mat-form-field class="note-dropdown">
+                        <mat-select [disableOptionCentering]="true" [(ngModel)]="note.duration">
+                            <mat-option *ngFor="let duration of noteDurations" [value]="note.duration">{{duration}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+                <td>
+                    <button mat-stroked-button>Play note</button>
+                </td>
+                <td>
+                    <button mat-stroked-button>Play from here</button>
+                </td>
+                <td>
+                    <button mat-stroked-button (click)="deleteNote(i)">Delete note</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <button mat-mini-fab matTooltip="Add note" color="accent" aria-label="Add note" 
+        class="add-note-btn" 
+        (click)="addNote()">+</button>
+</div>

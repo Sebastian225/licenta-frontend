@@ -1,0 +1,26 @@
+<div (mouseenter)="isHovering = true" (mouseleave)="isHovering = false" [class.wapper-expanded]="isExpanded || isHovering">
+    <button mat-mini-fab (click)="expandMenu()" color="primary" style="margin: 10px;">
+        <mat-icon aria-label="Menu">menu</mat-icon>
+    </button>
+    
+    <mat-nav-list>
+        <mat-list-item [routerLink]="'generate'">
+            <mat-icon mat-list-icon>developer_board</mat-icon> 
+            <h4 mat-line *ngIf="isExpanded || isHovering">Generate music</h4>
+        </mat-list-item>
+        <mat-list-item [routerLink]="'structure'">
+          <mat-icon mat-list-icon>music_video</mat-icon>
+          <h4 mat-line *ngIf="isExpanded || isHovering">Structure editor</h4>
+        </mat-list-item>
+        <mat-list-item [routerLink]="'subject'">
+          <mat-icon mat-list-icon>border_color</mat-icon>
+          <h4 mat-line *ngIf="isExpanded || isHovering">Subject editor</h4>
+        </mat-list-item>
+        <!-- <mat-list-item [routerLink]="'help'">
+            <mat-icon mat-list-icon>help_outline</mat-icon>
+            <h4 mat-line *ngIf="isExpanded || isHovering">Help</h4>
+        </mat-list-item> -->
+    </mat-nav-list>
+</div>
+
+
