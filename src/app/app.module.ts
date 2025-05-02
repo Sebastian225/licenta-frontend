@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 // angular material
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -55,7 +56,8 @@ import { FilesHandlerComponent } from './shared/components/files-handler/files-h
     MatDialogModule,
     MatSelectModule,
     DragDropModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    HttpClientModule
   ],
   providers: [ElectronService],
   bootstrap: [AppComponent]

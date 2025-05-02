@@ -24,8 +24,15 @@
                 </td>
                 <td>
                     <mat-form-field class="note-dropdown">
-                        <mat-select [disableOptionCentering]="true" [(ngModel)]="note.duration">
-                            <mat-option *ngFor="let duration of noteDurations" [value]="duration">{{duration.value}}</mat-option>
+                        <mat-select [disableOptionCentering]="true" 
+                                    [(ngModel)]="note.duration"
+                                    [compareWith]="compareDurations">
+                            <mat-select-trigger>
+                                <mat-icon [svgIcon]="note.duration.value" aria-hidden="false"></mat-icon>
+                            </mat-select-trigger>
+                            <mat-option *ngFor="let duration of noteDurations" [value]="duration">
+                                <mat-icon [svgIcon]="duration.value" aria-hidden="false"></mat-icon>
+                            </mat-option>
                         </mat-select>
                     </mat-form-field>
                 </td>

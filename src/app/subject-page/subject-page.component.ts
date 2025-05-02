@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { NoteConstants } from '@app/shared/constants';
-import { Note, NoteDurations } from './dto/note';
+import { Note, NoteDuration, NoteDurations } from './dto/note';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ElectronService } from '@app/shared/service/electron.service';
 import * as Tone from "tone";
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-subject-page',
@@ -20,7 +22,16 @@ export class SubjectPageComponent implements OnInit {
   noteOctaves = NoteConstants.Octaves;
   noteDurations = NoteDurations;
 
-  constructor(private _electronService: ElectronService) { }
+  constructor(
+    private _electronService: ElectronService,
+    private iconRegistry: MatIconRegistry,
+    private sanitizer: DomSanitizer
+  ) {
+    for (let i = 0; i < this.noteDurations.length; i++){
+      const duration = this.noteDurations[i];
+      iconRegistry.addSvgIcon(duration.value, sanitizer.bypassSecurityTrustResourceUrl(duration.icon));
+    }
+  }
 
   ngOnInit(): void {
   }
@@ -96,6 +107,14 @@ export class SubjectPageComponent implements OnInit {
       const pitch = note.getMidiPitch();
       synth.triggerAttackRelease(pitch, note.duration.midiPlaybackNotation, currentTime);
     }
+  }
+
+  displayDurationIcon(duration: NoteDuration): string {
+    return duration ? duration.icon : '';
+  }
+  
+  compareDurations(a: NoteDuration, b: NoteDuration): boolean {
+    return a && b && a.value === b.value;
   }
 
 }
