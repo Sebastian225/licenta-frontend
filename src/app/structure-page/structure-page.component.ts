@@ -42,7 +42,6 @@ export class StructurePageComponent implements OnInit {
   ngOnInit(): void {
     this.initDefaultStructure();
     this.initShortcutsMap();
-    this.initElectronListeners();
   }
 
   ngOnDestroy(): void {
@@ -347,21 +346,7 @@ export class StructurePageComponent implements OnInit {
     this.sectionsButtonPosition.top = StructuresStyleConsts.WrapperMargin + (( this.parts.length + 1 ) * ( StructuresStyleConsts.ElementSize + StructuresStyleConsts.ElementMargin ) + StructuresStyleConsts.LineHeight ) / 2 - StructuresStyleConsts.ButtonSize / 2;
   }
 
-  browseFolder() {
-    this._electronService.send('select-folder');
-  }
-
-  initElectronListeners() {
-    this._electronService.on('select-folder', (event: Electron.IpcMessageEvent, result: string) => {
-      this.outputFolder = result;
-      this.outputFolderField.nativeElement.blur();
-    });
-  }
-
-  @ViewChild('outputField')
-  outputFolderField!: ElementRef;
-
-  createStructure(){
+  createStructure(outputData: any){
     // if (this.outputFolder !== '' && this.outputName !== ''){
     //   this._electronService.send('create-structure');
     // } else {
@@ -372,10 +357,11 @@ export class StructurePageComponent implements OnInit {
     // dialogRef.afterClosed().subscribe(result => {
     //   console.log(`Dialog result: ${result}`);
     // });
-    console.log(this.getFileContent(this.keys, this.parts))
+    console.log(this.getFileContent(this.keys, this.parts));
+    console.log(outputData)
     this._electronService.send('create-structure', {
-      folder: this.outputFolder,
-      name: this.outputName,
+      folder: outputData.folderPath,
+      name: outputData.name,
       content: this.getFileContent(this.keys, this.parts)
     });
   }

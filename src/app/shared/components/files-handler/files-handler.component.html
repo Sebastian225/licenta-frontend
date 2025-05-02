@@ -1,11 +1,11 @@
-<!-- <div class="generate-panel">
+<div class="generate-panel">
     <mat-form-field [matTooltip]="'Choose an output folder'" (click)="browseFolder()">
         <mat-label>Output folder</mat-label>
-        <input #outputField type="text" matInput [(ngModel)]="outputFolder">
+        <input #outputField type="text" matInput [(ngModel)]="outputData.folderPath">
     </mat-form-field>
     <mat-form-field>
         <mat-label>Output file name</mat-label>
-        <input type="text" matInput [(ngModel)]="outputName">
+        <input type="text" matInput [(ngModel)]="outputData.name">
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="createStructure()">Create structure</button>
-</div> -->
+    <button mat-raised-button color="primary" (click)="createMethodCall()">Export</button>
+</div>

@@ -84,31 +84,101 @@ ipcMain.on('select-folder', (event) => {
   })
 });
 
+// COMMON
+
+async function showConfirmationDialog() {
+  const result = await dialog.showMessageBox(mainWindow, {
+      type: 'question',
+      buttons: ['Yes', 'No'],
+      defaultId: 1,
+      cancelId: 1,
+      title: 'Confirm',
+      message: 'There is already a file with the provided name. Are you sure you want to overwrite it?',
+  });
+
+  return result.response === 0; // 'Yes' is index 0
+}
+
 // STRUCTURE GENERATION
+
+function writeStructureFile(fullPath, content) {
+  try {
+    fs.writeFileSync(fullPath, content, 'utf-8'); 
+  }
+  catch(e) { 
+    dialog.showErrorBox("Error", "Could not save the structure");
+    console.log(e);
+  }
+  finally {
+    dialog.showMessageBox(mainWindow, {
+      title: 'Done',
+      message: 'Structure saved successfully!',
+      type: 'info'
+    })
+  }
+}
 
 ipcMain.on('create-structure', (event, data) => {
   //console.log(data)
   if (!data.folder || !data.name) {
     dialog.showErrorBox("Error", "Please set a file name and a folder to save the structure in.");
   } else {
-    try { 
-      fs.writeFileSync(data.folder + '\\' + data.name + '.txt', data.content, 'utf-8'); 
-    }
-    catch(e) { 
-      dialog.showErrorBox("Error", "Could not save the structure");
-      console.log(e);
-    }
-    finally {
-      dialog.showMessageBox(mainWindow, {
-        title: 'Done',
-        message: 'Structure saved successfully!',
-        type: 'info'
-      })
-    }
+    const fullPath = data.folder + '\\' + data.name + '.txt';
+
+    fs.access(fullPath, (err) => {
+      if (err) {
+        writeStructureFile(fullPath, data.content);
+      } else {
+        // confirm dialog to overwrite
+        showConfirmationDialog().then((confirmed) => {
+          if (confirmed) {
+            writeStructureFile(fullPath, data.content);
+          }
+        });
+      }
+    });
   }
 });
 
 // SUBJECT GENERATION
+
+function writeSubjectFile(fullPath, content) {
+  try {
+    fs.writeFileSync(fullPath, content, 'utf-8');
+
+    dialog.showMessageBox(mainWindow, {
+      title: 'Done',
+      message: 'Subject saved successfully!',
+      type: 'info'
+    })
+  }
+  catch(e) { 
+    dialog.showErrorBox("Error", "Could not save the structure");
+    console.log(e);
+  }
+}
+
+ipcMain.on('create-subject', (event, data) => {
+  //console.log(data)
+  if (!data.folder || !data.name) {
+    dialog.showErrorBox("Error", "Please set a file name and a folder to save the subject in.");
+  } else {
+    const fullPath = data.folder + '\\' + data.name + '.txt';
+
+    fs.access(fullPath, (err) => {
+      if (err) {
+        writeSubjectFile(fullPath, data.content);
+      } else {
+        // confirm dialog to overwrite
+        showConfirmationDialog().then((confirmed) => {
+          if (confirmed) {
+            writeSubjectFile(fullPath, data.content);
+          }
+        });
+      }
+    });
+  }
+});
 
 // FUGUE GENERATION
 

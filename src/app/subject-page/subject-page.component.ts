@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NoteConstants } from '@app/shared/constants';
 import { Note } from './dto/note';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { ElectronService } from '@app/shared/service/electron.service';
 
 @Component({
   selector: 'app-subject-page',
@@ -18,10 +19,9 @@ export class SubjectPageComponent implements OnInit {
   noteOctaves = NoteConstants.Octaves;
   noteDurations = NoteConstants.DurationList;
 
-  constructor() { }
+  constructor(private _electronService: ElectronService) { }
 
   ngOnInit(): void {
-    console.log(this.notes[0])
   }
 
   addNote(): void {
@@ -34,6 +34,24 @@ export class SubjectPageComponent implements OnInit {
 
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.notes, event.previousIndex, event.currentIndex);
+  }
+
+  getFileContent(notes: Note[]): string {
+    let result = '';
+
+    for(let i = 0; i < notes.length; i++){
+      result += notes[i].pitch + notes[i].octave + ' ' + notes[i].duration + '\n';
+    }
+
+    return result;
+  }
+
+  createSubject(outputData: any): void {
+    this._electronService.send('create-subject', {
+      folder: outputData.folderPath,
+      name: outputData.name,
+      content: this.getFileContent(this.notes)
+    });
   }
 
 }

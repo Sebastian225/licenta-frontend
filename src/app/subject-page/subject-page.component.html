@@ -11,21 +11,21 @@
                 <td>
                     <mat-form-field class="note-dropdown">
                         <mat-select [disableOptionCentering]="true" [(ngModel)]="note.pitch">
-                            <mat-option *ngFor="let pitch of notePitches" [value]="note.pitch">{{pitch}}</mat-option>
+                            <mat-option *ngFor="let pitch of notePitches" [value]="pitch">{{pitch}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </td>
                 <td>
                     <mat-form-field class="note-dropdown">
                         <mat-select [disableOptionCentering]="true" [(ngModel)]="note.octave">
-                            <mat-option *ngFor="let octave of noteOctaves" [value]="note.octave">{{octave}}</mat-option>
+                            <mat-option *ngFor="let octave of noteOctaves" [value]="octave">{{octave}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </td>
                 <td>
                     <mat-form-field class="note-dropdown">
                         <mat-select [disableOptionCentering]="true" [(ngModel)]="note.duration">
-                            <mat-option *ngFor="let duration of noteDurations" [value]="note.duration">{{duration}}</mat-option>
+                            <mat-option *ngFor="let duration of noteDurations" [value]="duration">{{duration}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </td>
@@ -44,4 +44,6 @@
     <button mat-mini-fab matTooltip="Add note" color="accent" aria-label="Add note" 
         class="add-note-btn" 
         (click)="addNote()">+</button>
+
+    <app-files-handler (createEvent)="createSubject($event)"></app-files-handler>
 </div>
