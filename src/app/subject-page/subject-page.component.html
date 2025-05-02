@@ -10,14 +10,14 @@
                 <!-- <div class="placeholder" *cdkDragPlaceholder></div> -->
                 <td>
                     <mat-form-field class="note-dropdown">
-                        <mat-select [disableOptionCentering]="true" [(ngModel)]="note.pitch">
+                        <mat-select [disableOptionCentering]="true" [(ngModel)]="note.pitch" [disabled]="note.isRest">
                             <mat-option *ngFor="let pitch of notePitches" [value]="pitch">{{pitch}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </td>
                 <td>
                     <mat-form-field class="note-dropdown">
-                        <mat-select [disableOptionCentering]="true" [(ngModel)]="note.octave">
+                        <mat-select [disableOptionCentering]="true" [(ngModel)]="note.octave" [disabled]="note.isRest">
                             <mat-option *ngFor="let octave of noteOctaves" [value]="octave">{{octave}}</mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -25,15 +25,20 @@
                 <td>
                     <mat-form-field class="note-dropdown">
                         <mat-select [disableOptionCentering]="true" [(ngModel)]="note.duration">
-                            <mat-option *ngFor="let duration of noteDurations" [value]="duration">{{duration}}</mat-option>
+                            <mat-option *ngFor="let duration of noteDurations" [value]="duration">{{duration.value}}</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </td>
                 <td>
-                    <button mat-stroked-button>Play note</button>
+                    <mat-checkbox [(ngModel)]="note.isRest">
+                        Rest note
+                    </mat-checkbox>
                 </td>
                 <td>
-                    <button mat-stroked-button>Play from here</button>
+                    <button mat-stroked-button (click)="playSingleNote(note)">Play note</button>
+                </td>
+                <td>
+                    <button mat-stroked-button (click)="playNotes(i)">Play from here</button>
                 </td>
                 <td>
                     <button mat-stroked-button (click)="deleteNote(i)">Delete note</button>
@@ -44,6 +49,9 @@
     <button mat-mini-fab matTooltip="Add note" color="accent" aria-label="Add note" 
         class="add-note-btn" 
         (click)="addNote()">+</button>
+
+    <br>
+    <button mat-stroked-button (click)="playNotes()">Play all</button>
 
     <app-files-handler (createEvent)="createSubject($event)"></app-files-handler>
 </div>

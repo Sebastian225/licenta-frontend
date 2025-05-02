@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import {MatDialogModule} from '@angular/material/dialog';
 import {MatSelectModule} from '@angular/material/select';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -53,7 +54,8 @@ import { FilesHandlerComponent } from './shared/components/files-handler/files-h
     MatInputModule,
     MatDialogModule,
     MatSelectModule,
-    DragDropModule
+    DragDropModule,
+    MatCheckboxModule
   ],
   providers: [ElectronService],
   bootstrap: [AppComponent]
