@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NoteConstants } from '@app/shared/constants';
-import { Note, NoteDuration, NoteDurations } from './dto/note';
+import { BemolDict, Note, NoteDuration, NoteDurations } from './dto/note';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ElectronService } from '@app/shared/service/electron.service';
 import * as Tone from "tone";
@@ -134,7 +134,6 @@ export class SubjectPageComponent implements OnInit {
     let result: Note[] = [];
 
     const lines = data.split('\n');
-    console.log(lines);
 
     for (let i = 0; i < lines.length; i++){
       const symbols = lines[i].trim().split(/\s+/);
@@ -152,6 +151,13 @@ export class SubjectPageComponent implements OnInit {
       if (note[1] == '#') {
         pitch += note[1];
         octave = note[2];
+      }
+      else if (note[1] == 'b') {
+        data = BemolDict[note.slice(0, 2)];
+        if (data){
+          pitch = data;
+        }
+        octave = note.slice(2);
       }
 
       let duration = new NoteDuration(symbols[1].replace(/\r/g, ''));

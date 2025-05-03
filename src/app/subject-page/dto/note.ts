@@ -67,4 +67,13 @@ export const NoteDurations: NoteDuration[] = [
     new NoteDuration('sixteenth-point'),
     new NoteDuration('32th'),
     new NoteDuration('32th-point'),
-  ];
+];
+
+// MAYBE-TODO I'll probably add a checkbox somewhere to use only sharps or flats in interface
+export const BemolDict: Record<string, string> = {
+    'Db': 'C#',
+    'Eb': 'D#',
+    'Gb': 'F#',
+    'Ab': 'G#',
+    'Bb': 'A#'
+}
