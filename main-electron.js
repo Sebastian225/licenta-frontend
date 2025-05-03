@@ -99,6 +99,31 @@ async function showConfirmationDialog() {
   return result.response === 0; // 'Yes' is index 0
 }
 
+ipcMain.on('import-file', (event) => {
+  dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile']
+  }).then(result => {
+    // console.log(result.canceled)
+    // console.log(result.filePaths)
+    if (!result.canceled) {
+      const path = result.filePaths[0];
+
+      fs.readFile(path, 'utf8', (err, data) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        event.sender.send('import-file', {
+          path: path,
+          content: data
+        });
+      });
+    }
+  }).catch(err => {
+    console.log(err)
+  })
+});
+
 // STRUCTURE GENERATION
 
 function writeStructureFile(fullPath, content) {

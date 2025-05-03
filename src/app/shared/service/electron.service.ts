@@ -20,11 +20,15 @@ export class ElectronService {
     }
   }
 
-  public on(channel: string, listener: any): void {
+  public on(channel: string, listener: any): () => void {
     if (!this.ipc) {
-      return;
+      return () => {};
     }
     this.ipc.on(channel, listener);
+
+    return () => {
+      this.ipc?.removeListener(channel, listener);
+    };
   }
 
   public send(channel: string, data?: any): void {

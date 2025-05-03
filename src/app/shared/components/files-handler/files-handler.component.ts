@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, ViewChild, ElementRef, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, ViewChild, ElementRef, Output, ChangeDetectorRef } from '@angular/core';
 import { ElectronService } from '@app/shared/service/electron.service';
 
 @Component({
@@ -8,7 +8,12 @@ import { ElectronService } from '@app/shared/service/electron.service';
 })
 export class FilesHandlerComponent implements OnInit {
 
-  constructor(private _electronService: ElectronService) { }
+  private channelCleanups: (() => void)[] = [];
+
+  constructor(
+    private _electronService: ElectronService,
+    private _changeDetector: ChangeDetectorRef
+  ) { }
 
   outputData = {
     folderPath: "",
@@ -17,6 +22,12 @@ export class FilesHandlerComponent implements OnInit {
 
   ngOnInit(): void {
     this.initElectronListeners();
+  }
+
+  ngOnDestroy(): void {
+    this.channelCleanups.forEach(cleanup => {
+      cleanup();
+    });
   }
 
   browseFolder() {
@@ -41,6 +52,25 @@ export class FilesHandlerComponent implements OnInit {
         this.outputData.folderPath = result;
         this.outputFolderField.nativeElement.blur();
       });
+
+      this._electronService.on('import-file', (event: Electron.IpcMessageEvent, result: {path: string, content: string}) => {
+        const splitPath = result.path.split('\\');
+        this.outputData.name = splitPath[splitPath.length - 1].replace('.txt', '');
+        let simplePath = '';
+        for (let i = 0; i < splitPath.length - 1; i++) {
+          simplePath += splitPath[i] + '\\';
+        }
+        this.outputData.folderPath = simplePath;
+
+        this._changeDetector.detectChanges();
+      });
   }
 
+  browseFile() {
+    this._electronService.send('import-file');
+  }
+
+  // TODO add spinner for when loading files
+  // TODO maybe add some custom file formats in order to be harder to corrupt files
+  // poate la master idk
 }

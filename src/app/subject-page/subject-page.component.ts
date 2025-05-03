@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { NoteConstants } from '@app/shared/constants';
 import { Note, NoteDuration, NoteDurations } from './dto/note';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -22,10 +22,13 @@ export class SubjectPageComponent implements OnInit {
   noteOctaves = NoteConstants.Octaves;
   noteDurations = NoteDurations;
 
+  private channelCleanups: (() => void)[] = [];
+
   constructor(
     private _electronService: ElectronService,
     private iconRegistry: MatIconRegistry,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private _changeDetector: ChangeDetectorRef
   ) {
     for (let i = 0; i < this.noteDurations.length; i++){
       const duration = this.noteDurations[i];
@@ -34,6 +37,19 @@ export class SubjectPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.channelCleanups.push(
+      this._electronService.on('import-file', (event: Electron.IpcMessageEvent, result: {path: string, content: string}) => {
+        this.notes = this.parseInputFileContent(result.content);
+  
+        this._changeDetector.detectChanges();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.channelCleanups.forEach(cleanup => {
+      cleanup();
+    });
   }
 
   addNote(): void {
@@ -62,9 +78,6 @@ export class SubjectPageComponent implements OnInit {
   }
 
   createSubject(outputData: any): void {
-
-    console.log(this.getFileContent(this.notes));
-
     this._electronService.send('create-subject', {
       folder: outputData.folderPath,
       name: outputData.name,
@@ -115,6 +128,38 @@ export class SubjectPageComponent implements OnInit {
   
   compareDurations(a: NoteDuration, b: NoteDuration): boolean {
     return a && b && a.value === b.value;
+  }
+
+  private parseInputFileContent(data: string): Note[] {
+    let result: Note[] = [];
+
+    const lines = data.split('\n');
+    console.log(lines);
+
+    for (let i = 0; i < lines.length; i++){
+      const symbols = lines[i].trim().split(/\s+/);
+      
+      if(symbols.length != 2) {
+        console.error(`Invalid note found at line ${i + 1}`);
+      }
+
+      const note = symbols[0]
+
+      let isRest = note == 'empty';
+      // TODO check symbols validity
+      let pitch = note[0];
+      let octave = note[1];
+      if (note[1] == '#') {
+        pitch += note[1];
+        octave = note[2];
+      }
+
+      let duration = new NoteDuration(symbols[1].replace(/\r/g, ''));
+
+      result.push(new Note(pitch, parseInt(octave), duration, isRest));
+    }
+
+    return result;
   }
 
 }

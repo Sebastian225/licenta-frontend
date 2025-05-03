@@ -41,11 +41,13 @@ export class PartsConsts {
     public static readonly Answer = 'A';
     public static readonly CounterSubject = 'CS';
     public static readonly Empty = 'E';
+    public static readonly FreeCounterpoint = 'FC'
 
     public static readonly SubjectDisplayValue = 'Subject';
     public static readonly AnswerDisplayValue = 'Answer';
     public static readonly CounterSubjectDisplayValue = 'Counter subject';
     public static readonly EmptyDisplayValue = 'Empty';
+    public static readonly FreeCounterpointDisplayValue = 'Free counterpoint'
 
     public static getDisplayValue(code: string, index: number | null): string {
         if (code === PartsConsts.Subject){
@@ -62,6 +64,10 @@ export class PartsConsts {
 
         if (code === PartsConsts.Empty){
             return PartsConsts.EmptyDisplayValue;
+        }
+
+        if (code === PartsConsts.FreeCounterpoint) {
+            return PartsConsts.FreeCounterpointDisplayValue;
         }
 
         return '';

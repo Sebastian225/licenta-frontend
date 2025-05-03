@@ -1,4 +1,4 @@
-<div class="generate-panel">
+<div class="generation-panel">
     <mat-form-field [matTooltip]="'Choose an output folder'" (click)="browseFolder()">
         <mat-label>Output folder</mat-label>
         <input #outputField type="text" matInput [(ngModel)]="outputData.folderPath">
@@ -8,4 +8,5 @@
         <input type="text" matInput [(ngModel)]="outputData.name">
     </mat-form-field>
     <button mat-raised-button color="primary" (click)="createMethodCall()">Export</button>
+    <button mat-raised-button color="primary" (click)="browseFile()">Import</button>
 </div>

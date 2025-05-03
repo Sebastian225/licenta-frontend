@@ -23,6 +23,8 @@ export class GenerationPageComponent implements OnInit {
   @ViewChild('structureFileField')
   structureFileField!: ElementRef;
 
+  private channelCleanups: (() => void)[] = [];
+
   constructor(private _electronService: ElectronService) {
   }
 
@@ -30,25 +32,37 @@ export class GenerationPageComponent implements OnInit {
     this.initSignals();
   }
 
+  ngOnDestroy(): void {
+    this.channelCleanups.forEach(cleanup => {
+      cleanup();
+    });
+  }
+
   initSignals(): void {
-    this._electronService.on('select-subject-file', (event: Electron.IpcMessageEvent, result: string) => {
-      this.subjectFilePath = result;
-      const split = this.subjectFilePath.split('\\');
-      this.subjectFile = split[split.length - 1];
-      this.subjectFileField.nativeElement.blur();
-    });
+    this.channelCleanups.push(
+      this._electronService.on('select-subject-file', (event: Electron.IpcMessageEvent, result: string) => {
+        this.subjectFilePath = result;
+        const split = this.subjectFilePath.split('\\');
+        this.subjectFile = split[split.length - 1];
+        this.subjectFileField.nativeElement.blur();
+      })
+    );
 
-    this._electronService.on('select-structure-file', (event: Electron.IpcMessageEvent, result: string) => {
-      this.structureFilePath = result;
-      const split = this.structureFilePath.split('\\');
-      this.structureFile = split[split.length - 1];
-      this.structureFileField.nativeElement.blur();
-    });
+    this.channelCleanups.push(
+      this._electronService.on('select-structure-file', (event: Electron.IpcMessageEvent, result: string) => {
+        this.structureFilePath = result;
+        const split = this.structureFilePath.split('\\');
+        this.structureFile = split[split.length - 1];
+        this.structureFileField.nativeElement.blur();
+      })
+    );
 
-    this._electronService.on('select-folder', (event: Electron.IpcMessageEvent, result: string) => {
-      this.outputFolder = result;
-      this.outputFolderField.nativeElement.blur();
-    });
+    this.channelCleanups.push(
+      this._electronService.on('select-folder', (event: Electron.IpcMessageEvent, result: string) => {
+        this.outputFolder = result;
+        this.outputFolderField.nativeElement.blur();
+      })
+    );
   }
 
   browseSubject(): void {

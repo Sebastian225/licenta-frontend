@@ -1,4 +1,4 @@
-import { Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { KeysConsts, PartsConsts, StructuresStyleConsts, UtilityConsts } from '@shared/constants';
 import { Key } from './dto/key';
 import { Part } from './dto/part';
@@ -31,7 +31,8 @@ export class StructurePageComponent implements OnInit {
   constructor(
       private _menuService: MenuService, 
       private _electronService: ElectronService,
-      private _dialog: MatDialog
+      private _dialog: MatDialog,
+      private _changeDetector: ChangeDetectorRef
     ) { 
     this.menuSizeObserver = this._menuService.menuSize$.subscribe(val => {
       this.menuSize = val;
@@ -39,13 +40,42 @@ export class StructurePageComponent implements OnInit {
     });
   }
 
+  private channelCleanups: (() => void)[] = [];
+
   ngOnInit(): void {
     this.initDefaultStructure();
     this.initShortcutsMap();
+
+    this.channelCleanups.push(
+      this._electronService.on('import-file', (event: Electron.IpcMessageEvent, result: {path: string, content: string}) => {
+        let data = this.parseInputFileContent(result.content);
+        this.keys = data.keys;
+        this.parts = data.parts;
+
+        this.initButtonsPositions();
+
+        this._changeDetector.detectChanges();
+      })
+    );
   }
 
   ngOnDestroy(): void {
     this.menuSizeObserver.unsubscribe();
+    this.channelCleanups.forEach(cleanup => {
+      cleanup();
+    });
+  }
+
+  private initButtonsPositions(): void {
+    this.sectionsButtonPosition = {
+      top:  StructuresStyleConsts.WrapperMargin + (( this.parts.length + 1 ) * ( StructuresStyleConsts.ElementSize + StructuresStyleConsts.ElementMargin ) + StructuresStyleConsts.LineHeight ) / 2 - StructuresStyleConsts.ButtonSize / 2,
+      left: StructuresStyleConsts.WrapperMargin + this.keys.length * ( StructuresStyleConsts.ElementSize + StructuresStyleConsts.ElementMargin )
+    }
+
+    this.partsButtonPosition = {
+      top: StructuresStyleConsts.WrapperMargin + ( this.parts.length + 1 ) * ( StructuresStyleConsts.ElementSize + StructuresStyleConsts.ElementMargin ) + StructuresStyleConsts.LineHeight,
+      left: StructuresStyleConsts.WrapperMargin
+    }
   }
 
   private initDefaultStructure(): void {
@@ -61,15 +91,7 @@ export class StructurePageComponent implements OnInit {
       [ new Part(PartsConsts.Empty), new Part(PartsConsts.Empty), new Part(PartsConsts.Subject) ]
     ]
 
-    this.sectionsButtonPosition = {
-      top:  StructuresStyleConsts.WrapperMargin + (( this.parts.length + 1 ) * ( StructuresStyleConsts.ElementSize + StructuresStyleConsts.ElementMargin ) + StructuresStyleConsts.LineHeight ) / 2 - StructuresStyleConsts.ButtonSize / 2,
-      left: StructuresStyleConsts.WrapperMargin + this.keys.length * ( StructuresStyleConsts.ElementSize + StructuresStyleConsts.ElementMargin )
-    }
-
-    this.partsButtonPosition = {
-      top: StructuresStyleConsts.WrapperMargin + ( this.parts.length + 1 ) * ( StructuresStyleConsts.ElementSize + StructuresStyleConsts.ElementMargin ) + StructuresStyleConsts.LineHeight,
-      left: StructuresStyleConsts.WrapperMargin
-    }
+    this.initButtonsPositions();
   }
 
   private initShortcutsMap(): void {
@@ -388,10 +410,88 @@ export class StructurePageComponent implements OnInit {
 
     return result.trimEnd();
   }
-}
-// TODO WITH PRIORITY what happens if user creates CS1 CS2 CS100? backend should check and not generate 100 CS. 
-// I think I considered it when I wrote CS generation, but I'm not sure
-// TODO arrow select perhaps?
-// opeth SORROW got me through this 
 
-// TODO open and edit structures
+  private parseKeys(keys: string[]): Key[] {
+    let result: Key[] = [];
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (
+        key === KeysConsts.Tonic ||
+        key === KeysConsts.Dominant ||
+        key === KeysConsts.Subdominant ||
+        key === KeysConsts.Relative ||
+        key === KeysConsts.RelativeDominant
+      ) {
+        result.push(new Key(key))
+      }
+      else {
+        console.error("invalid key symbol: " + key);
+        // TODO throw error and catch it later to not create weird structures
+      }
+    }
+
+    return result;
+  }
+
+  private parseParts(parts: string[][]): Part[][] {
+    let result: Part[][] = [];
+
+    //I use this because it's faster than forEach so don't judge me
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      result.push([]);
+      for (let j = 0; j < part.length; j++) {
+        const symbol = part[j];
+        if (
+          symbol === PartsConsts.Subject ||
+          symbol === PartsConsts.Answer ||
+          symbol === PartsConsts.Empty ||
+          symbol === PartsConsts.FreeCounterpoint
+        ) {
+          result[i].push(new Part(symbol))
+        }
+        else if (symbol.slice(0, 2) === PartsConsts.CounterSubject) {
+          //TODO throw error if CS number is NaN
+          result[i].push(new Part(PartsConsts.CounterSubject, parseInt(symbol.slice(2))));
+        }
+        else {
+          console.log("Invalid part symbol: " + part);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  private parseInputFileContent(data: string): {keys: Key[], parts: Part[][]} {
+    let result: {keys: Key[], parts: Part[][]} = {
+      keys: [],
+      parts: []
+    }
+
+    const lines = data.split('\r\n');
+    if (lines.length !== 4 && lines.length !== 5) {
+      console.error("Invalid structure. Number of parts should be 3 or 4 for now.");
+      return result;
+    }
+
+    const keys = lines[0].trim().split(/\s+/);
+    const parts = lines.slice(1).map(line => line.trim().split(/\s+/));
+
+    console.log(keys);
+    console.log(parts)
+
+    if (!parts.every(part => part.length === keys.length)) {
+      console.error("Invalid structure. Number of columns should be consistent across lines.");
+      return result;
+    }
+
+    result.keys = this.parseKeys(keys);
+    result.parts = this.parseParts(parts);
+
+    return result;
+  }
+}
+
+// opeth SORROW got me through this 
