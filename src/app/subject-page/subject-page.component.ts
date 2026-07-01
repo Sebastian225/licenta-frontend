@@ -40,6 +40,7 @@ export class SubjectPageComponent implements OnInit {
     this.channelCleanups.push(
       this._electronService.on('import-file', (event: Electron.IpcMessageEvent, result: {path: string, content: string}) => {
         this.notes = this.parseInputFileContent(result.content);
+        //add timeout
   
         this._changeDetector.detectChanges();
       })
@@ -133,7 +134,7 @@ export class SubjectPageComponent implements OnInit {
   private parseInputFileContent(data: string): Note[] {
     let result: Note[] = [];
 
-    const lines = data.split('\n');
+    const lines = data.replace('\r', '').split('\n');
 
     for (let i = 0; i < lines.length; i++){
       const symbols = lines[i].trim().split(/\s+/);
@@ -145,7 +146,6 @@ export class SubjectPageComponent implements OnInit {
       const note = symbols[0]
 
       let isRest = note == 'empty';
-      // TODO check symbols validity
       let pitch = note[0];
       let octave = note[1];
       if (note[1] == '#') {

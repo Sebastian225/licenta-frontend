@@ -95,4 +95,18 @@ export class NoteConstants {
     public static readonly Octaves = [
         2, 3, 4, 5, 6
     ];
+
+    public static readonly ValidPitches = new Set<string>([
+        'C', 'C#',
+        'Db', 'D', 'D#',
+        'Eb', 'E',
+        'F', 'F#',
+        'Gb', 'G', 'G#',
+        'Ab', 'A', 'A#',
+        'Bb', 'B',
+    ]);
+
+    public static readonly ValidNoteDurations = new Set<string>([
+        'full', 'full-point', 'half', 'half-point', 'quarter', 'quarter-point', 'eighth', 'eighth-point', 'sixteenth', 'sixteenth-point', '32th', '32th-point'
+    ])
 }

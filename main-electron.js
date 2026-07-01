@@ -230,7 +230,17 @@ function checkFileOverwrites(filesSet, outputName, numberOfFiles){
 
 function generateFugue(data){
   //const venv = spawn("D:/licenta/PComposer/venv/Scripts/activate.bat");
-  const python = spawn("D:/licenta/PComposer/venv/Scripts/python", ["../PComposer/main.py", data.subject, data.structure, data.numberOfFiles, data.outputFolder, data.outputName]);
+  const python = spawn(
+    "D:/licenta/PComposer/.venv/Scripts/python", 
+    [
+      "../PComposer/main.py", 
+      data.subject, 
+      data.structure, 
+      data.numberOfFiles, 
+      data.outputFolder, 
+      data.outputName
+    ]
+  );
   console.log("called")
   python.stdout.on("data", (result) => {
     console.log(new Buffer(result).toString('ascii'))

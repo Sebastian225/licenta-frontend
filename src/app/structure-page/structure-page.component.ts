@@ -105,6 +105,7 @@ export class StructurePageComponent implements OnInit {
     this.PartsShortcutMap.set('KeyC', PartsConsts.CounterSubject);
     this.PartsShortcutMap.set('KeyS', PartsConsts.Subject);
     this.PartsShortcutMap.set('KeyE', PartsConsts.Empty);
+    this.PartsShortcutMap.set('KeyF', PartsConsts.FreeCounterpoint);
   }
 
   selectKey(index: number, e: MouseEvent): void {
@@ -437,7 +438,6 @@ export class StructurePageComponent implements OnInit {
   private parseParts(parts: string[][]): Part[][] {
     let result: Part[][] = [];
 
-    //I use this because it's faster than forEach so don't judge me
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
       result.push([]);
@@ -452,7 +452,6 @@ export class StructurePageComponent implements OnInit {
           result[i].push(new Part(symbol))
         }
         else if (symbol.slice(0, 2) === PartsConsts.CounterSubject) {
-          //TODO throw error if CS number is NaN
           result[i].push(new Part(PartsConsts.CounterSubject, parseInt(symbol.slice(2))));
         }
         else {
@@ -470,7 +469,8 @@ export class StructurePageComponent implements OnInit {
       parts: []
     }
 
-    const lines = data.split('\r\n');
+    const lines = data.replace('\r', '').split('\n');
+    console.log(lines)
     if (lines.length !== 4 && lines.length !== 5) {
       console.error("Invalid structure. Number of parts should be 3 or 4 for now.");
       return result;
